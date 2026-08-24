@@ -18,5 +18,5 @@ the legacy presets are tombstoned. One dispatcher owns the fleet.
 ## Consequences
 
 - One codebase to maintain and test.
-- The kernel has a single, stable dispatch command for autonomous tasks.
+- The kernel has a single, stable dispatch command for agent tasks.
 - Old preset names are removed from the live set to prevent accidental use.

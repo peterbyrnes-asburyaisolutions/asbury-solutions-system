@@ -1,6 +1,6 @@
 # Architecture
 
-This document describes how the Asbury Solutions autonomous agent
+This document describes how the Asbury Solutions agent
 organization is built. All diagrams are Mermaid source (render natively on
 GitHub) and are also stored standalone in [`../diagrams/`](../diagrams/).
 

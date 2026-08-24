@@ -20,7 +20,7 @@ The following are **never** committed here, by policy:
 
 ## Why
 
-- **Zero-fabrication rule:** this repo only ever shows what the system really
+- **Zero-fabrication rule:** this repo only ever shows what the system actually
   is — nothing invented, nothing dressed up.
 - **Zero-leak rule:** a public architecture repo is valuable precisely because
   it can be opened by anyone. Anything that would let someone reach the live

@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="240" viewBox="0 0 1200 240">
+<!--
+  ═══════════════════════════════════════════════════════════════════════
+  OPERATION HIRED · DESIGN LANE · D7 · README HERO BANNER v1
+  Owner: creative-director (Delacroix) · 2026-08-23 · Harbor Grit · zero slop
+  ═══════════════════════════════════════════════════════════════════════
+
+  HERO LOCKUP — public surface. Brand reads "ASBURY SOLUTIONS".
+  NO "AI" in the brand. No slop. System described in plain words.
+  Canvas 1200×240 (GitHub README hero).
+  ═══════════════════════════════════════════════════════════════════════
+-->
+  <defs>
+    <style>
+      .paper   { fill: #F2EFE8; }
+      .ink     { fill: #111111; }
+      .signal  { fill: #E6441F; }
+      .muted   { fill: #5A5A5A; }
+      .surface { fill: #FFFFFF; }
+      .line    { stroke: #161616; stroke-width: 2; }
+      .headline{ font-family: "Archivo Black", "Arial Black", sans-serif; font-weight: 900; }
+      .mono    { font-family: "IBM Plex Mono", "Courier New", monospace; }
+    </style>
+  </defs>
+
+  <!-- canvas -->
+  <rect class="paper" width="1200" height="240"/>
+  <rect class="line" fill="none" x="6" y="6" width="1188" height="228"/>
+
+  <!-- hard offset shadow under white identity plate -->
+  <rect x="868" y="60" width="288" height="120" fill="#171717"/>
+  <rect class="surface" x="864" y="56" width="288" height="120"/>
+  <rect class="signal" x="864" y="56" width="6" height="120"/>
+
+  <!-- LEFT: brand lockup -->
+  <text class="headline" x="56" y="112" font-size="52" letter-spacing="-1">ASBURY SOLUTIONS</text>
+  <text class="mono" x="58" y="148" font-size="18" fill="#E6441F" font-weight="bold">AGENT OPERATING SYSTEM</text>
+  <text class="mono" x="58" y="174" font-size="16" fill="#111111">TASKS IN → WORK → RESULTS OUT · FAIL-LOUD</text>
+
+  <!-- RIGHT: proof plate -->
+  <text class="headline" x="884" y="100" font-size="20" fill="#111111">15 SEATS</text>
+  <text class="headline" x="884" y="126" font-size="20" fill="#E6441F">ONE MACHINE</text>
+  <text class="mono" x="884" y="152" font-size="13" fill="#5A5A5A">SANITIZED PUBLIC VIEW</text>
+
+  <!-- bottom rail -->
+  <rect class="line" fill="#F2EFE8" x="48" y="198" width="1104" height="28"/>
+  <text class="mono" x="58" y="217" font-size="13" fill="#111111">SYSTEM ARCHITECTURE · DESIGN DECISIONS · STACK</text>
+  <text class="mono" x="820" y="217" font-size="13" fill="#5A5A5A">ZERO FABRICATION · MIT LICENSE</text>
+</svg>

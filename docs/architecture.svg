@@ -1,0 +1,187 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000">
+<!--
+  ═══════════════════════════════════════════════════════════════════════
+  OPERATION HIRED · DESIGN LANE · D7 · SYSTEM ARCHITECTURE v2
+  Owner: creative-director (Delacroix) · 2026-08-23 · Harbor Grit · zero slop
+  ═══════════════════════════════════════════════════════════════════════
+
+  CANONICAL PUBLIC DIAGRAM — sanitized, system only.
+  · NO ports, endpoints, tailnet IPs, credentials, client names, CRM data.
+  · Social brand: "Asbury Solutions". NO "AI" in any label.
+  · Harbor Grit tokens (docs/DIAGRAM_STYLE.md): cream paper, ink 2px rules,
+    white surface plates, one signal-red accent, hard offset shadows.
+  · Every box is a real component from the sanitized system build.
+  · Drawn by hand (no renderer dependency); edit coordinates carefully.
+  ═══════════════════════════════════════════════════════════════════════
+-->
+  <defs>
+    <style>
+      .paper    { fill: #F2EFE8; }
+      .ink      { fill: #111111; }
+      .signal   { fill: #E6441F; }
+      .muted    { fill: #5A5A5A; }
+      .surface  { fill: #FFFFFF; }
+      .line     { stroke: #161616; stroke-width: 2; }
+      .thick    { stroke: #161616; stroke-width: 4; }
+      .signal-line { stroke: #E6441F; stroke-width: 2; }
+      .dash     { stroke-dasharray: 6 5; }
+      .headline { font-family: "Archivo Black", "Arial Black", sans-serif; font-weight: 900; }
+      .mono     { font-family: "IBM Plex Mono", "Courier New", monospace; }
+    </style>
+  </defs>
+
+  <!-- ══ CANVAS ══ -->
+  <rect class="paper" width="1600" height="1000"/>
+  <rect class="line" fill="none" x="6" y="6" width="1588" height="988"/>
+
+  <!-- ══ HEADER BAND ══ -->
+  <rect x="48" y="36" width="1504" height="104" fill="#171717"/>
+  <rect class="surface" x="44" y="32" width="1504" height="104"/>
+  <rect class="signal" x="44" y="32" width="6" height="104"/>
+  <text class="headline" x="72" y="84" font-size="34" letter-spacing="-0.5">ASBURY SOLUTIONS · AGENT OPERATING SYSTEM</text>
+  <text class="mono" x="74" y="114" font-size="16" fill="#5A5A5A">A TASK ENTERS · THE SYSTEM PLANS · DISPATCHES · FAILS LOUD OR FINISHES</text>
+
+  <!-- ══ ARROWS (drawn first, behind boxes) ══ -->
+  <!-- task queue → scheduler -->
+  <line class="line" x1="252" y1="250" x2="352" y2="250"/>
+  <polygon points="358,250 344,242 344,258" fill="#111111"/>
+  <!-- scheduler → planner -->
+  <line class="line" x1="480" y1="352" x2="480" y2="418"/>
+  <polygon points="480,424 472,410 488,410" fill="#111111"/>
+  <!-- planner → dispatcher -->
+  <line class="line" x1="480" y1="512" x2="480" y2="578"/>
+  <polygon points="480,584 472,570 488,570" fill="#111111"/>
+  <!-- dispatcher → fleet (thick bus) -->
+  <line class="thick" x1="640" y1="580" x2="760" y2="580"/>
+  <polygon points="766,580 752,572 752,588" fill="#111111"/>
+  <!-- fleet → result -->
+  <line class="line" x1="1290" y1="652" x2="1290" y2="806"/>
+  <polygon points="1290,812 1282,798 1298,798" fill="#111111"/>
+  <!-- fail-loud: dispatcher bottom → marker -->
+  <line class="signal-line dash" x1="480" y1="688" x2="480" y2="720"/>
+  <polygon points="480,726 472,712 488,712" fill="#E6441F"/>
+
+  <!-- ══ INPUT — TASK QUEUE ══ -->
+  <rect x="60" y="180" width="192" height="140" fill="#171717"/>
+  <rect class="surface" x="56" y="176" width="192" height="140"/>
+  <text class="headline" x="76" y="222" font-size="18">INPUT</text>
+  <text class="mono" x="76" y="252" font-size="15" fill="#111111">TASK QUEUE</text>
+  <text class="mono" x="76" y="278" font-size="12" fill="#5A5A5A">work enters here</text>
+  <text class="mono" x="76" y="296" font-size="12" fill="#5A5A5A">one at a time</text>
+
+  <!-- ══ KERNEL — SCHEDULER ══ -->
+  <rect x="358" y="200" width="252" height="100" fill="#171717"/>
+  <rect class="surface" x="354" y="196" width="252" height="100"/>
+  <rect class="signal" x="354" y="196" width="6" height="100"/>
+  <text class="headline" x="374" y="232" font-size="17">SCHEDULER</text>
+  <text class="mono" x="374" y="258" font-size="12" fill="#5A5A5A">owns the queue</text>
+  <text class="mono" x="374" y="276" font-size="12" fill="#5A5A5A">retry · stale cleanup</text>
+
+  <!-- ══ PLANNER ══ -->
+  <rect x="358" y="426" width="252" height="100" fill="#171717"/>
+  <rect class="surface" x="354" y="422" width="252" height="100"/>
+  <rect class="signal" x="354" y="422" width="6" height="100"/>
+  <text class="headline" x="374" y="458" font-size="17">PLANNER</text>
+  <text class="mono" x="374" y="484" font-size="12" fill="#5A5A5A">turns a task into</text>
+  <text class="mono" x="374" y="502" font-size="12" fill="#5A5A5A">ordered steps</text>
+
+  <!-- ══ DISPATCHER ══ -->
+  <rect x="358" y="592" width="252" height="100" fill="#171717"/>
+  <rect class="surface" x="354" y="588" width="252" height="100"/>
+  <rect class="signal" x="354" y="588" width="6" height="100"/>
+  <text class="headline" x="374" y="620" font-size="17">DISPATCHER</text>
+  <text class="mono" x="374" y="646" font-size="12" fill="#5A5A5A">runs each step as its</text>
+  <text class="mono" x="374" y="664" font-size="12" fill="#5A5A5A">own seat · parallel waves</text>
+
+  <!-- ══ FAIL-LOUD MARKER (signal accent, below dispatcher) ══ -->
+  <rect x="358" y="732" width="252" height="92" fill="#171717"/>
+  <rect class="surface" x="354" y="728" width="252" height="92"/>
+  <rect class="signal" x="354" y="728" width="6" height="92"/>
+  <text class="headline" x="374" y="762" font-size="16" fill="#E6441F">FAIL-LOUD</text>
+  <text class="mono" x="374" y="788" font-size="12" fill="#111111">empty plan or failed run</text>
+  <text class="mono" x="374" y="806" font-size="12" fill="#111111">reports FAILED — never done</text>
+
+  <!-- ══ FLEET — 15 SEATS ══ -->
+  <rect x="766" y="160" width="716" height="492" fill="none" class="line"/>
+  <rect class="signal" x="766" y="160" width="716" height="6"/>
+  <text class="headline" x="786" y="196" font-size="17">FIFTEEN SEATS — THE FLEET</text>
+  <text class="mono" x="786" y="218" font-size="12" fill="#5A5A5A">each seat is a real isolated agent with identity, memory, tools</text>
+
+  <!-- seat grid: 5 cols × 3 rows -->
+  <!-- row 1 -->
+  <rect class="surface" x="786" y="240" width="120" height="64" stroke="#161616" stroke-width="2"/>
+  <text class="mono" x="796" y="264" font-size="13" fill="#111111" font-weight="bold">CEO</text>
+  <text class="mono" x="796" y="284" font-size="10" fill="#5A5A5A">coordination</text>
+
+  <rect class="surface" x="922" y="240" width="120" height="64" stroke="#161616" stroke-width="2"/>
+  <text class="mono" x="932" y="264" font-size="13" fill="#111111" font-weight="bold">LIAISON</text>
+  <text class="mono" x="932" y="284" font-size="10" fill="#5A5A5A">front door</text>
+
+  <rect class="surface" x="1058" y="240" width="120" height="64" stroke="#161616" stroke-width="2"/>
+  <text class="mono" x="1068" y="264" font-size="13" fill="#111111" font-weight="bold">ASBURY</text>
+  <text class="mono" x="1068" y="284" font-size="10" fill="#5A5A5A">business</text>
+
+  <rect class="surface" x="1194" y="240" width="120" height="64" stroke="#161616" stroke-width="2"/>
+  <text class="mono" x="1204" y="264" font-size="13" fill="#111111" font-weight="bold">PIPELINE</text>
+  <text class="mono" x="1204" y="284" font-size="10" fill="#5A5A5A">sales</text>
+
+  <rect class="surface" x="1330" y="240" width="132" height="64" stroke="#161616" stroke-width="2"/>
+  <text class="mono" x="1340" y="264" font-size="13" fill="#111111" font-weight="bold">ENGINEERING</text>
+  <text class="mono" x="1340" y="284" font-size="10" fill="#5A5A5A">builds</text>
+
+  <!-- row 2 -->
+  <rect class="surface" x="786" y="324" width="120" height="64" stroke="#161616" stroke-width="2"/>
+  <text class="mono" x="796" y="348" font-size="13" fill="#111111" font-weight="bold">DEVOPS</text>
+  <text class="mono" x="796" y="368" font-size="10" fill="#5A5A5A">runs it</text>
+
+  <rect class="surface" x="922" y="324" width="120" height="64" stroke="#161616" stroke-width="2"/>
+  <text class="mono" x="932" y="348" font-size="13" fill="#111111" font-weight="bold">MONITOR</text>
+  <text class="mono" x="932" y="368" font-size="10" fill="#5A5A5A">24/7 watch</text>
+
+  <rect class="surface" x="1058" y="324" width="120" height="64" stroke="#161616" stroke-width="2"/>
+  <text class="mono" x="1068" y="348" font-size="13" fill="#111111" font-weight="bold">RESEARCH</text>
+  <text class="mono" x="1068" y="368" font-size="10" fill="#5A5A5A">deep dives</text>
+
+  <rect class="surface" x="1194" y="324" width="120" height="64" stroke="#161616" stroke-width="2"/>
+  <text class="mono" x="1204" y="348" font-size="13" fill="#111111" font-weight="bold">MARKETING</text>
+  <text class="mono" x="1204" y="368" font-size="10" fill="#5A5A5A">messaging</text>
+
+  <rect class="surface" x="1330" y="324" width="132" height="64" stroke="#161616" stroke-width="2"/>
+  <text class="mono" x="1340" y="348" font-size="13" fill="#111111" font-weight="bold">DESIGN</text>
+  <text class="mono" x="1340" y="368" font-size="10" fill="#5A5A5A">visuals</text>
+
+  <!-- row 3 -->
+  <rect class="surface" x="786" y="408" width="120" height="64" stroke="#161616" stroke-width="2"/>
+  <text class="mono" x="796" y="432" font-size="13" fill="#111111" font-weight="bold">DONNA</text>
+  <text class="mono" x="796" y="452" font-size="10" fill="#5A5A5A">calendar</text>
+
+  <rect class="surface" x="922" y="408" width="120" height="64" stroke="#161616" stroke-width="2"/>
+  <text class="mono" x="932" y="432" font-size="13" fill="#111111" font-weight="bold">JANITOR</text>
+  <text class="mono" x="932" y="452" font-size="10" fill="#5A5A5A">hygiene</text>
+
+  <rect class="surface" x="1058" y="408" width="120" height="64" stroke="#161616" stroke-width="2"/>
+  <text class="mono" x="1068" y="432" font-size="13" fill="#111111" font-weight="bold">AUTOMATION</text>
+  <text class="mono" x="1068" y="452" font-size="10" fill="#5A5A5A">workflows</text>
+
+  <rect class="surface" x="1194" y="408" width="120" height="64" stroke="#161616" stroke-width="2"/>
+  <text class="mono" x="1204" y="432" font-size="13" fill="#111111" font-weight="bold">DATA</text>
+  <text class="mono" x="1204" y="452" font-size="10" fill="#5A5A5A">analysis</text>
+
+  <rect class="surface" x="1330" y="408" width="132" height="64" stroke="#161616" stroke-width="2"/>
+  <text class="mono" x="1340" y="432" font-size="13" fill="#111111" font-weight="bold">KERNEL</text>
+  <text class="mono" x="1340" y="452" font-size="10" fill="#5A5A5A">scheduler</text>
+
+  <!-- ══ RESULT ══ -->
+  <rect x="1126" y="818" width="330" height="120" fill="#171717"/>
+  <rect class="surface" x="1122" y="814" width="330" height="120"/>
+  <rect class="signal" x="1122" y="814" width="6" height="120"/>
+  <text class="headline" x="1142" y="848" font-size="17">RESULT</text>
+  <text class="mono" x="1142" y="876" font-size="12" fill="#111111">completed only when every</text>
+  <text class="mono" x="1142" y="894" font-size="12" fill="#111111">step finished · else failed</text>
+  <text class="mono" x="1142" y="916" font-size="12" fill="#E6441F" font-weight="bold">NEVER REPORTS DONE UNLESS DONE</text>
+
+  <!-- ══ FOOTER ══ -->
+  <rect x="48" y="940" width="1504" height="32" fill="#F2EFE8" class="line"/>
+  <text class="mono" x="58" y="960" font-size="12" fill="#111111">ASBURY SOLUTIONS · SANITIZED PUBLIC VIEW · SYSTEM ONLY</text>
+  <text class="mono" x="1170" y="960" font-size="12" fill="#5A5A5A">HARBOR GRIT · ZERO SLOP</text>
+</svg>
