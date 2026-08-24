@@ -12,6 +12,28 @@ finish.
 > credentials, live endpoints, client data, or internal operations details
 > (see [docs/sanitization.md](docs/sanitization.md)).
 
+## Live status
+
+This is a running system, not a mockup. The badges below probe the only three
+public endpoints the system exposes; each turns green when it is up right now.
+
+![voice agent](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fvoice.asburyaisolutions.com%2Fhealth&query=status&label=voice%20agent&color=2ea44f)
+![asburyaisolutions.com](https://img.shields.io/website?url=https%3A%2F%2Fasburyaisolutions.com&label=asburyaisolutions.com&color=2ea44f)
+![trim-match.com](https://img.shields.io/website?url=https%3A%2F%2Ftrim-match.com&label=trim-match.com&color=2ea44f)
+
+The health response bodies themselves are deliberately not reproduced here —
+the live voice endpoint reports its own runtime details, and those stay out of
+this repository.
+
+**Start here, in plain words:**
+
+- **[The story](docs/case-study-voice-agent.md)** — from one idea to a company
+  that runs itself: the arc, the shipped products, and the customer.
+- **[A day in the life](docs/day-in-the-life.md)** — what a real day looks
+  like when fifteen seats run on one machine: four task flows, anonymized.
+- **[How the org knows an agent works](examples/evals/)** — the eval harness:
+  golden datasets, regression suites, LLM-as-judge, fail-loud.
+
 ---
 
 ## What it is
@@ -135,18 +157,26 @@ The full log, including the SQLite (WAL) ledger decision
 
 ```
 .
-├── README.md                 # this file — public overview
+├── README.md                 # this file — public overview + live status
 ├── LICENSE                   # MIT
 ├── docs/
 │   ├── architecture.md       # system + kernel + task-flow diagrams
 │   ├── architecture.svg      # canonical system diagram (Harbor Grit)
 │   ├── banner.svg            # README hero banner (Harbor Grit)
+│   ├── running-15-agents-in-production.md  # how the fleet runs in production
+│   ├── day-in-the-life.md    # anonymized shape of a working day
+│   ├── post-mortem-lessons.md  # honest lessons from running autonomous agents
+│   ├── case-study-voice-agent.md  # the arc: idea → 15 agents → shipped voice agent
+│   ├── case-study-business.md    # the business side of the same arc
 │   ├── tech-stack.md         # every technology and why
 │   ├── sanitization.md       # what is deliberately excluded, and why
 │   ├── DIAGRAM_STYLE.md      # Harbor Grit diagram spec
 │   └── decisions/            # decisions-as-code (ADR style)
 ├── diagrams/                 # Mermaid source for architecture diagrams
-└── examples/                 # non-secret sample configuration
+├── tools/                    # reusable ops tooling (sanitized)
+│   ├── secret_sweep.py       # secret/leak scanner + health watchdog
+│   └── watchdog.py           # cron watchdog pattern
+└── examples/                 # non-secret samples: config, dispatch, evals
 ```
 
 Non-secret sample configuration to learn from: [examples/](examples/).

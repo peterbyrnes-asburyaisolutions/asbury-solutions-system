@@ -1,0 +1,62 @@
+{
+  "jobs": [
+    {
+      "id": "nightly-backup",
+      "name": "Nightly backup",
+      "enabled": true,
+      "schedule": {"kind": "cron", "expr": "0 2 * * *", "display": "daily at 02:00"},
+      "created_at": "2026-07-01T00:00:00Z",
+      "last_run_at": "2026-08-23T02:00:00Z",
+      "last_status": "success",
+      "next_run_at": "2026-08-24T02:00:00Z"
+    },
+    {
+      "id": "weekday-report",
+      "name": "Weekday report",
+      "enabled": true,
+      "schedule": {"kind": "cron", "expr": "30 7 * * 1-5", "display": "Mon-Fri at 07:30"},
+      "created_at": "2026-07-01T00:00:00Z",
+      "last_run_at": "2026-08-22T07:30:00Z",
+      "last_status": "success",
+      "next_run_at": "2026-08-25T07:30:00Z"
+    },
+    {
+      "id": "stalled-batch",
+      "name": "Stalled batch job",
+      "enabled": true,
+      "schedule": {"kind": "interval", "minutes": 60, "display": "every 60m"},
+      "created_at": "2026-07-01T00:00:00Z",
+      "last_run_at": "2026-08-10T12:00:00Z",
+      "last_status": "success",
+      "next_run_at": "2026-08-10T13:00:00Z"
+    },
+    {
+      "id": "erroring-job",
+      "name": "Recently erroring job",
+      "enabled": true,
+      "schedule": {"kind": "interval", "minutes": 30, "display": "every 30m"},
+      "created_at": "2026-07-01T00:00:00Z",
+      "last_run_at": "2026-08-24T09:00:00Z",
+      "last_status": "error",
+      "next_run_at": "2026-08-24T09:30:00Z"
+    },
+    {
+      "id": "disabled-job",
+      "name": "Deliberately disabled job",
+      "enabled": false,
+      "schedule": {"kind": "cron", "expr": "0 3 * * *", "display": "daily at 03:00"},
+      "created_at": "2026-07-01T00:00:00Z",
+      "last_run_at": "2026-08-01T03:00:00Z",
+      "last_status": "success",
+      "next_run_at": "2026-08-02T03:00:00Z"
+    },
+    {
+      "id": "never-ran-new",
+      "name": "Newly registered job (grace period)",
+      "enabled": true,
+      "schedule": {"kind": "cron", "expr": "0 9 * * *", "display": "daily at 09:00"},
+      "created_at": "2026-08-24T08:30:00Z",
+      "next_run_at": "2026-08-24T09:00:00Z"
+    }
+  ]
+}

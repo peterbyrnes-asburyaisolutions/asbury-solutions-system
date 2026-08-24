@@ -6,6 +6,8 @@
 *.key
 *_token*
 *secret*
+# The anti-secret scanner itself is NOT a secret — ship it.
+!tools/secret_sweep.py
 
 # Databases (task ledger, memory) — runtime state, not source
 *.db

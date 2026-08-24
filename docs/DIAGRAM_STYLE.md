@@ -75,8 +75,8 @@ Before a diagram ships in the public repo:
 1. `rsvg-convert` renders without error.
 2. Zero `#E6441F`-on-`#F2EFE8` contrast violations on text (signal is for
    accents/headlines at weight 900 or 7px+ rules, not body copy).
-3. Anti-slop validator clean on any `.html` wrapper: `python3
-   the local anti-slop validator (CI mode)`.
-4. Devops secret-sweep (the current task id) passes before publish.
+3. Anti-slop validator clean on any `.html` wrapper (run the project's
+   validator in `--ci` mode).
+4. Devops secret-sweep passes before publish.
 5. **The gut check:** if a reviewer thinks the diagram came out of an AI
    template, it gets redrawn. No exceptions.

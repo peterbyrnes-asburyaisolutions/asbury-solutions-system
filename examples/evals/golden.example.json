@@ -1,0 +1,59 @@
+{
+  "_comment": "SANITIZED GOLDEN DATASET — synthetic, generic example cases only. No real clients, tickets, or data. Each case is (input, expected_category, expected_urgency) used by eval_harness.example.py.",
+  "cases": [
+    {
+      "id": "GEN-0001",
+      "input": "I was charged twice on my invoice and need a refund.",
+      "expected_category": "billing",
+      "expected_urgency": "high"
+    },
+    {
+      "id": "GEN-0002",
+      "input": "I cannot log in, it says my password is wrong and I am locked out.",
+      "expected_category": "auth",
+      "expected_urgency": "high"
+    },
+    {
+      "id": "GEN-0003",
+      "input": "The app crashes every time I open the report view.",
+      "expected_category": "bug",
+      "expected_urgency": "medium"
+    },
+    {
+      "id": "GEN-0004",
+      "input": "How do I set up a new workspace for my team?",
+      "expected_category": "support",
+      "expected_urgency": "low"
+    },
+    {
+      "id": "GEN-0005",
+      "input": "My monthly statement shows a payment that failed.",
+      "expected_category": "billing",
+      "expected_urgency": "high"
+    },
+    {
+      "id": "GEN-0006",
+      "input": "Access was revoked after a role change and I need it back.",
+      "expected_category": "auth",
+      "expected_urgency": "high"
+    },
+    {
+      "id": "GEN-0007",
+      "input": "Exporting to spreadsheet fails with a timeout error.",
+      "expected_category": "bug",
+      "expected_urgency": "medium"
+    },
+    {
+      "id": "GEN-0008",
+      "input": "Where can I find the documentation for the API?",
+      "expected_category": "support",
+      "expected_urgency": "low"
+    },
+    {
+      "id": "GEN-0009",
+      "input": "I would like to know the status of my open case.",
+      "expected_category": "other",
+      "expected_urgency": "medium"
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+{
+  "terms": [],
+  "_note": "Add org-specific strings to flag on every scan (client/customer names, personal names, internal hostnames, internal paths). Keep the real file LOCAL — never commit it. Run: python3 tools/secret_sweep.py scan . --deny-file /path/to/local-terms.json"
+}
