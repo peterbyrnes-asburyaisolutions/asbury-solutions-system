@@ -1,0 +1,49 @@
+# System Overview — Mermaid source
+# Renders natively on GitHub when embedded in a markdown code fence.
+
+flowchart TB
+    subgraph SURFACES["Client Surfaces"]
+        UI["Web Dashboard"]
+        API["HTTP API"]
+        WH["Webhooks"]
+    end
+
+    subgraph KERNEL["Scheduling Kernel (Flask app, threaded)"]
+        SCHED["Scheduler<br/>tick · next_run"]
+        RUNNER["Task Runner<br/>dispatch shell cmds · track pid"]
+        WD["Watchdog<br/>3-tier service probes"]
+        MEM["Memory API"]
+        RL["Rate Limiter"]
+    end
+
+    subgraph ORCH["Orchestrator"]
+        PLAN["Planner<br/>task → steps (seat + task + deps)"]
+        DISPATCH["Dispatcher<br/>real seat subprocess"]
+        SYNC["Result synthesis"]
+    end
+
+    subgraph FLEET["The Fleet — 15 agent seats"]
+        S1["CEO"]
+        S2["Engineering"]
+        S3["DevOps"]
+        S4["Research"]
+        S5["Marketing"]
+        SN["... + 10 more seats"]
+    end
+
+    subgraph LEDGER["Task Ledger (SQLite, WAL)"]
+        TASKS["tasks"]
+        MEMS["memory"]
+        SCHS["schedules"]
+        ALERTS["alerts"]
+    end
+
+    UI --> KERNEL
+    API --> KERNEL
+    WH --> KERNEL
+    KERNEL --> ORCH
+    PLAN --> DISPATCH
+    DISPATCH --> FLEET
+    FLEET --> SYNC
+    KERNEL --> LEDGER
+    ORCH --> LEDGER

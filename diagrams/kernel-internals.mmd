@@ -1,0 +1,20 @@
+# Kernel Internals — Mermaid source
+
+flowchart LR
+    subgraph PROC["Kernel process"]
+        T1["Task Runner"]
+        T2["Scheduler"]
+        T3["Watchdog"]
+        T4["WAL Checkpoint"]
+        T5["Agent Heartbeat"]
+        T6["Rate Limiter"]
+    end
+
+    DB[("SQLite os.db — WAL mode")]
+
+    T1 --> DB
+    T2 --> DB
+    T3 --> DB
+    T4 --> DB
+    T5 --> DB
+    T6 --> DB

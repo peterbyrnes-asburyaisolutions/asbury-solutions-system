@@ -1,0 +1,21 @@
+# Example agent preset — non-secret template
+# Presets describe a named agent execution mode the kernel can invoke.
+# Placeholders only — no real values.
+
+preset:
+  slug: "<PRESET_SLUG>"
+  label: "<Human-readable label>"
+  description: "<One-line description>"
+
+  # Command shape the kernel builds. Angle brackets are placeholders.
+  command: "<COMMAND_TEMPLATE>"
+
+  # Timeout contract (see ADR-0004)
+  timeout:
+    base_seconds: 600
+    build_seconds: 1200
+    quick_seconds: 300
+
+  # Which profile/toolset this preset runs under
+  profile: "<PROFILE_SLUG>"
+  tools: "<TOOLSET_NAME>"

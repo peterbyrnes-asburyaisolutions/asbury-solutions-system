@@ -1,0 +1,29 @@
+# Task Flow (Dispatch) — Mermaid sequence source
+
+sequenceDiagram
+    participant C as Caller (API / schedule / webhook)
+    participant K as Kernel
+    participant O as Orchestrator Planner
+    participant D as Dispatcher
+    participant S as Seat (agent subprocess)
+    participant L as Task Ledger
+
+    C->>K: task
+    K->>L: record task (pending)
+    K->>O: plan(task)
+    O->>O: steps = [ (seat, task, deps), ... ]
+    alt no steps OR all steps fail
+        O-->>K: OrchestrationError
+        K->>L: mark task failed
+        K-->>C: exit non-zero
+    else steps produced
+        loop each step (parallel wave)
+            O->>D: dispatch_seat(seat, step)
+            D->>S: launch real agent subprocess
+            S-->>D: step result
+            D-->>O: collect
+        end
+        O->>O: synthesize final result
+        O->>L: mark task completed
+        O-->>K: final answer
+    end

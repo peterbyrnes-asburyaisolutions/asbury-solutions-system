@@ -1,0 +1,34 @@
+# Example seat configuration — non-secret template
+# This is a SAMPLE. Copy it, fill in your own values, and NEVER commit real
+# values. No credential, endpoint, port, or path in this file is real.
+#
+# Each seat is one agent profile with its own identity, model, memory, and
+# tool allow-list.
+
+seat:
+  slug: engineering            # unique seat name (filesystem / dispatch name)
+  name: "<ENGINEERING_SEAT_NAME>"
+  role: "Full-stack application code"
+
+  # Model selection — the actual key/value is resolved from the shared auth
+  # source at runtime. Placeholders only here.
+  model:
+    provider: "<PROVIDER>"
+    name: "<MODEL_NAME>"
+
+  # Tool allow-list — the tools this seat may call.
+  tools:
+    - read_file
+    - write_file
+    - list_files
+    - run_command
+
+  # Optional: dispatch hints
+  dispatch:
+    step_timeout_seconds: 1200   # build-type steps (see ADR-0004)
+    parallel: true
+
+  # Optional: legacy aliases accepted by name resolution (case-insensitive)
+  aliases:
+    - "<ALIAS_1>"
+    - "<ALIAS_2>"
