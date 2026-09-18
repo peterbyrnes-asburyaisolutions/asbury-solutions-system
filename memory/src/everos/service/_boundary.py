@@ -13,8 +13,8 @@ Mode dispatch:
   full ``ConversationItem`` list (tool rows preserved).
 
 Both paths share a single unprocessed-buffer track (``"memorize"``) because
-boundary detection is single-pass; switching mode requires a fresh service
-process (see ``settings.memorize.mode``).
+boundary detection is single-pass; the effective mode is resolved per
+request from ``settings.memorize.resolve_mode(app_id)``.
 
 The boundary stage also owns the **sqlite ``memcell`` ledger**: each cell
 gets exactly one row regardless of mode (since the algorithm produces one

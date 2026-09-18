@@ -18,12 +18,17 @@ timezone = "UTC"
 
 [api]
 # HTTP server bind for ``everos server start``. Default ``127.0.0.1``
-# keeps the API on loopback only — EverOS ships no built-in auth (see
-# SECURITY.md threat model). Only set ``host = "0.0.0.0"`` after you
-# have placed your own gateway / auth layer in front of the server.
-# Override via EVEROS_API__HOST and EVEROS_API__PORT.
+# keeps the API on loopback only (see SECURITY.md threat model). Only
+# set ``host = "0.0.0.0"`` after you have enabled ``auth_token`` below
+# or placed your own gateway / auth layer in front of the server.
+# Override via EVEROS_API__HOST, EVEROS_API__PORT, EVEROS_API__AUTH_TOKEN.
 host = "127.0.0.1"
 port = 8000
+# Optional shared secret. When set (non-empty), require
+# ``Authorization: Bearer <token>`` on ``/api/v{1,2}/memory/*``.
+# Leave unset / empty for open local API (default). /health and
+# /metrics stay open either way.
+# auth_token = "replace-me"
 
 [sqlite]
 # PRAGMA journal_mode  — WAL is the recommended high-concurrency mode.
@@ -159,9 +164,11 @@ hard_msg_limit = 500
 # Conversation mode. Selects the boundary detector and which pipelines run:
 #   "chat"  -> BoundaryDetector       + user_memory only
 #   "agent" -> AgentBoundaryDetector  + user_memory + agent_memory
-# A single service process serves one mode at a time; switching mode
-# requires a restart. Override via EVEROS_MEMORIZE__MODE.
+# ``mode`` is the process-wide default. Override a specific app_id via
+# ``mode_by_app`` (e.g. device traffic under ``genesis-mini``).
+# Override via EVEROS_MEMORIZE__MODE / EVEROS_MEMORIZE__MODE_BY_APP.
 mode = "agent"
+# mode_by_app = { "genesis-mini" = "agent" }
 
 [knowledge]
 # Max bytes for an uploaded knowledge document (default 50 MiB). Oversized

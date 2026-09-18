@@ -88,18 +88,29 @@ class ApiSettings(BaseModel):
     """HTTP API server bind configuration.
 
     Default ``host = "127.0.0.1"`` keeps the server on loopback only,
-    matching the threat model in ``SECURITY.md``: EverOS ships **no
-    built-in authentication**, so binding to a routable interface
-    (``0.0.0.0`` etc.) without your own gateway / auth layer in front
-    is unsupported.
+    matching the threat model in ``SECURITY.md``. Auth is **opt-in**:
+    leave ``auth_token`` unset (or empty) for the historical open local
+    API; set it to require ``Authorization: Bearer <token>`` on
+    ``/api/v{1,2}/memory/*``. Binding to a routable interface
+    (``0.0.0.0`` etc.) without a token or an external gateway remains
+    unsupported.
 
     Env binding:
         EVEROS_API__HOST
         EVEROS_API__PORT
+        EVEROS_API__AUTH_TOKEN
     """
 
     host: str = "127.0.0.1"
     port: int = Field(default=8000, ge=1, le=65535)
+    auth_token: str | None = None
+    """Optional shared secret for memory API bearer auth.
+
+    ``None`` / empty string → no auth (default; existing clients and
+    tests keep working). Non-empty → ``MemoryApiAuthMiddleware``
+    rejects unauthenticated calls to ``/api/v{1,2}/memory/*`` with
+    HTTP 401. ``/health`` and ``/metrics`` stay open.
+    """
 
 
 class SqliteSettings(BaseModel):
@@ -421,8 +432,9 @@ class MemorizeSettings(BaseModel):
     """Memorize use-case configuration.
 
     ``mode`` selects which boundary detector runs and which pipelines are
-    dispatched. A service process serves one mode at a time; toggling
-    requires a restart.
+    dispatched (process-wide default). Per-``app_id`` overrides live in
+    ``mode_by_app`` so e.g. device traffic (``app_id="genesis-mini"``)
+    can run ``"agent"`` while the global default stays ``"chat"``.
 
         - ``"chat"``  -> ``everalgo.user_memory.BoundaryDetector`` and only the
           user-memory pipeline runs.
@@ -438,11 +450,22 @@ class MemorizeSettings(BaseModel):
 
     Env binding:
         EVEROS_MEMORIZE__MODE
+        EVEROS_MEMORIZE__MODE_BY_APP
         EVEROS_MEMORIZE__SESSION_LOCK_TIMEOUT_SECONDS
     """
 
     mode: Literal["chat", "agent"] = "agent"
+    mode_by_app: dict[str, Literal["chat", "agent"]] = Field(default_factory=dict)
+    """Optional per-``app_id`` override of :attr:`mode`.
+
+    Lookup is exact string match on the request ``app_id`` (default
+    ``"default"`` when omitted). Missing keys fall back to ``mode``.
+    """
     session_lock_timeout_seconds: float = Field(default=360.0, gt=0)
+
+    def resolve_mode(self, app_id: str) -> Literal["chat", "agent"]:
+        """Return effective memorize mode for ``app_id``."""
+        return self.mode_by_app.get(app_id, self.mode)
 
 
 class ClusteringSettings(BaseModel):

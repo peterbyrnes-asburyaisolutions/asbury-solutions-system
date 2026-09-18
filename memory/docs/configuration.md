@@ -79,6 +79,7 @@ everos init --root /data/everos
 |---|---|---|---|
 | `host` | string | `"127.0.0.1"` | HTTP server bind address. |
 | `port` | int | `8000` | HTTP server bind port (1–65535). |
+| `auth_token` | string \| null | `null` | Opt-in shared secret. When set, require `Authorization: Bearer <token>` on `/api/v{1,2}/memory/*`. Empty/unset = no auth. |
 
 ### `[sqlite]`
 
@@ -177,7 +178,8 @@ Zilliz Cloud endpoint; a Milvus Lite filesystem path is rejected.
 
 | Field | Type | Default | Description |
 |---|---|---|---|
-| `mode` | string | `"agent"` | Conversation mode: `chat` (user-memory only) or `agent` (user + agent memory). Requires restart. |
+| `mode` | string | `"agent"` | Default conversation mode: `chat` (user-memory only) or `agent` (user + agent memory). |
+| `mode_by_app` | map[string → string] | `{}` | Per-`app_id` override of `mode` (e.g. `{ "genesis-mini" = "agent" }`). |
 | `session_lock_timeout_seconds` | float | `360.0` | Max wall-clock per memorize() invocation. |
 
 ### `[clustering]`

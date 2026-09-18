@@ -51,6 +51,17 @@ max_concurrent  = 5
 # root     = "~/.everos"
 # timezone = "Asia/Shanghai"
 #
+# [api]
+# host = "127.0.0.1"
+# port = 8000
+# # Opt-in bearer auth for /api/v{1,2}/memory/* (see SECURITY.md).
+# # auth_token = "replace-me"
+#
+# [memorize]
+# mode = "chat"
+# # Per-app_id override of mode (device traffic example):
+# # mode_by_app = { "genesis-mini" = "agent" }
+#
 # [sqlite]
 # busy_timeout_ms = 10000
 #

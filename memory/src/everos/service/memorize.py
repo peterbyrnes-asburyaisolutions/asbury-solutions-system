@@ -4,7 +4,7 @@ End-to-end orchestration:
 
     POST /api/v2/memory/add { session_id, messages[] }
         → ingest.process → IngestResult
-        → _boundary.prepare_cells(mode=settings.memorize.mode) → cells
+        → _boundary.prepare_cells(mode=resolve_mode(app_id)) → cells
         → asyncio.gather(
             UserMemoryPipeline.run(cells, ...),
             AgentMemoryPipeline.run(cells, ...) if mode == "agent",
@@ -204,7 +204,8 @@ async def memorize(
     cancelled and ``async with`` auto-releases the lock.
     """
     settings = load_settings()
-    mode = settings.memorize.mode
+    app_id = payload.get("app_id") or "default"
+    mode = settings.memorize.resolve_mode(app_id)
     boundary_cfg = settings.boundary_detection
     session_id = payload["session_id"]
 
