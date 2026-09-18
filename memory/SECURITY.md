@@ -47,8 +47,11 @@ following in mind:
   the supported threat model** — it assumes a trusted local caller. The server
   binds to `127.0.0.1` by default (env `EVEROS_API__HOST`) so a fresh install
   is loopback-only. Only set the bind to `0.0.0.0` (or any routable interface)
-  after you have placed your own gateway / auth layer in front;
-  `everos server start` will log a warning when you bind to `0.0.0.0`.
+  after you have placed your own gateway / auth layer in front, or enabled the
+  opt-in bearer token (`[api] auth_token` / `EVEROS_API__AUTH_TOKEN`), which
+  requires `Authorization: Bearer <token>` on `/api/v{1,2}/memory/*`
+  (`/health` and `/metrics` stay open). `everos server start` will log a
+  warning when you bind to `0.0.0.0`.
 - **Documents you ingest are untrusted input.** Filenames, metadata, and
   content that originate outside your control are parsed, indexed, and written
   to disk. An instance that ingests third-party documents is processing

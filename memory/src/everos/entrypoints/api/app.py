@@ -11,6 +11,7 @@ import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from everos.config import load_settings
 from everos.core.lifespan import (
     LifespanProvider,
     MetricsLifespanProvider,
@@ -22,6 +23,7 @@ from everos.core.middleware import (
     DEFAULT_CORS_ALLOW_HEADERS,
     DEFAULT_CORS_ALLOW_METHODS,
     DEFAULT_CORS_ORIGINS,
+    MemoryApiAuthMiddleware,
     ProfileMiddleware,
     PrometheusMiddleware,
     RequestIdMiddleware,
@@ -120,6 +122,11 @@ def create_app(
     )
     app.add_middleware(PrometheusMiddleware)
     app.add_middleware(ProfileMiddleware)
+    # Opt-in bearer auth for /api/v{1,2}/memory/* only. Unset/empty token
+    # keeps the historical open local API (existing tests rely on this).
+    auth_token = (load_settings().api.auth_token or "").strip()
+    if auth_token:
+        app.add_middleware(MemoryApiAuthMiddleware, token=auth_token)
     # Outermost: every request gets a request id before any other middleware
     # or handler runs, so all logs + the response header carry it.
     app.add_middleware(RequestIdMiddleware)

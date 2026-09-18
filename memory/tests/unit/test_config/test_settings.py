@@ -157,3 +157,45 @@ def test_resolve_root_from_env(monkeypatch: pytest.MonkeyPatch) -> None:
 
 def test_resolve_root_explicit() -> None:
     assert resolve_root("/custom/root") == Path("/custom/root").resolve()
+
+
+def test_api_auth_token_default_none() -> None:
+    s = Settings()
+    assert s.api.auth_token is None
+
+
+def test_api_auth_token_from_env(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("EVEROS_API__AUTH_TOKEN", "s3cret")
+    s = Settings()
+    assert s.api.auth_token == "s3cret"
+
+
+def test_memorize_mode_by_app_default_empty() -> None:
+    s = Settings()
+    assert s.memorize.mode_by_app == {}
+    assert s.memorize.resolve_mode("genesis-mini") == s.memorize.mode
+
+
+def test_memorize_mode_by_app_from_toml(tmp_path: Path) -> None:
+    root = tmp_path / "myroot"
+    root.mkdir()
+    (root / "everos.toml").write_text(
+        '[memorize]\nmode = "chat"\nmode_by_app = { "genesis-mini" = "agent" }\n',
+        encoding="utf-8",
+    )
+    s = Settings(_everos_root=root)
+    assert s.memorize.mode == "chat"
+    assert s.memorize.mode_by_app == {"genesis-mini": "agent"}
+    assert s.memorize.resolve_mode("genesis-mini") == "agent"
+    assert s.memorize.resolve_mode("other") == "chat"
+
+
+def test_memorize_mode_by_app_from_env(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("EVEROS_MEMORIZE__MODE", "chat")
+    monkeypatch.setenv(
+        "EVEROS_MEMORIZE__MODE_BY_APP",
+        '{"genesis-mini": "agent"}',
+    )
+    s = Settings()
+    assert s.memorize.mode == "chat"
+    assert s.memorize.resolve_mode("genesis-mini") == "agent"

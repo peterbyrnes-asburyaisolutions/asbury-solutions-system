@@ -83,8 +83,8 @@ def start(
     bootstrap_logger.info("starting everos on %s:%d", host_resolved, port_resolved)
     if host_resolved == "0.0.0.0":
         bootstrap_logger.warning(
-            "binding to 0.0.0.0 exposes the API on all interfaces; EverOS "
-            "ships no built-in auth — see SECURITY.md"
+            "binding to 0.0.0.0 exposes the API on all interfaces; enable "
+            "[api] auth_token or put a gateway in front — see SECURITY.md"
         )
 
     try:

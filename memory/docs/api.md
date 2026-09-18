@@ -67,10 +67,12 @@ and response bodies are UTF-8 JSON.
 
 ### Authentication
 
-EverOS ships **no built-in authentication**. The server binds to
-`127.0.0.1` by default; place your own gateway or auth layer in front
-before exposing the API on any other interface. See
-[../SECURITY.md](../SECURITY.md) for the threat model.
+Auth is **opt-in**. Leave `[api] auth_token` unset (default) for an open
+local API. When set, memory routes under `/api/v{1,2}/memory/*` require
+`Authorization: Bearer <token>`; `/health` and `/metrics` stay open.
+The server still binds to `127.0.0.1` by default — place a gateway in
+front (or enable `auth_token`) before exposing the API on any other
+interface. See [../SECURITY.md](../SECURITY.md) for the threat model.
 
 ### Response envelope
 
