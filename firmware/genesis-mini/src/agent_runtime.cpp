@@ -210,8 +210,15 @@ String ask(const String& question) {
 
   if (!handled && llmEnabled_ && LlmClient::isConfigured()) {
     StatusLed::setPattern(StatusLed::Pattern::Thinking);
+    String userMessage = question;
+    if (SyncClient::isConfigured()) {
+      String rag;
+      if (SyncClient::search(question, rag) && rag.length() > 0) {
+        userMessage = rag + "\n\n" + question;
+      }
+    }
     String err;
-    if (LlmClient::chat(personality_, question, answer, &err)) {
+    if (LlmClient::chat(personality_, userMessage, answer, &err)) {
       handled = true;
     } else {
       answer = String("LLM error: ") + err;
