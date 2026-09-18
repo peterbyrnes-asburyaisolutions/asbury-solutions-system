@@ -19,6 +19,15 @@ struct ModuleSlot {
   String label;
   bool present = false;
   JsonDocument config;
+
+  void reset(uint8_t p) {
+    port = p;
+    kind = ModuleKind::None;
+    profile = "";
+    label = "";
+    present = false;
+    config.clear();
+  }
 };
 
 namespace ModuleBus {

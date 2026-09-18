@@ -65,7 +65,7 @@ bool loadPortConfig(uint8_t port, ModuleSlot& slot) {
     JsonDocument profileDoc;
     if (!deserializeJson(profileDoc, profileRaw)) {
       for (JsonPair kv : profileDoc.as<JsonObject>()) {
-        if (!slot.config.containsKey(kv.key())) {
+        if (slot.config[kv.key()].isNull()) {
           slot.config[kv.key()] = kv.value();
         }
       }
@@ -106,8 +106,7 @@ const char* kindName(ModuleKind k) {
 bool begin() {
   for (uint8_t p = AX22_FIRST_MODULE_PORT; p <= AX22_LAST_MODULE_PORT; p++) {
     int idx = indexForPort(p);
-    slots[idx] = ModuleSlot{};
-    slots[idx].port = p;
+    slots[idx].reset(p);
   }
   refresh();
   return true;
@@ -235,7 +234,7 @@ bool writePort(uint8_t port, const String& payload) {
   // Optional JSON: {"pin":"b","value":1} or {"pwm":128}
   JsonDocument doc;
   if (!deserializeJson(doc, payload)) {
-    if (doc.containsKey("pwm")) {
+    if (!doc["pwm"].isNull()) {
       analogWrite(pins->b, constrain(static_cast<int>(doc["pwm"]), 0, 255));
       return true;
     }

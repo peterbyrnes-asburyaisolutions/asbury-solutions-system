@@ -9,9 +9,9 @@
 
 #include <Arduino.h>
 
-// On-board status NeoPixel
-static constexpr uint8_t PIN_NEOPIXEL = 21;
-static constexpr uint8_t NEOPIXEL_COUNT = 1;
+// On-board status NeoPixel (avoid PIN_NEOPIXEL — reserved by Arduino-ESP32)
+static constexpr uint8_t PIN_STATUS_LED = 21;
+static constexpr uint8_t STATUS_LED_COUNT = 1;
 
 // User / boot-adjacent button (active low)
 static constexpr uint8_t PIN_BUTTON = 45;

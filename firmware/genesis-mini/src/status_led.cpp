@@ -7,7 +7,7 @@
 namespace StatusLed {
 namespace {
 
-Adafruit_NeoPixel pixel(NEOPIXEL_COUNT, PIN_NEOPIXEL, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel pixel(STATUS_LED_COUNT, PIN_STATUS_LED, NEO_GRB + NEO_KHZ800);
 Pattern current = Pattern::Off;
 uint32_t lastTick = 0;
 uint8_t phase = 0;

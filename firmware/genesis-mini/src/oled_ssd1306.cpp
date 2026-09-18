@@ -2,6 +2,7 @@
 
 #include "board_pins.h"
 
+#include <cstring>
 #include <Wire.h>
 
 namespace Oled {
@@ -103,7 +104,8 @@ void drawChar(uint8_t col, uint8_t row, char ch) {
     }
   }
   uint8_t idx = static_cast<uint8_t>(ch - 32);
-  if (idx >= sizeof(FONT5X7) / 5) {
+  constexpr size_t kFontCount = sizeof(FONT5X7) / sizeof(FONT5X7[0]);
+  if (idx >= kFontCount) {
     idx = static_cast<uint8_t>('?' - 32);
   }
   for (uint8_t i = 0; i < 5; i++) {
