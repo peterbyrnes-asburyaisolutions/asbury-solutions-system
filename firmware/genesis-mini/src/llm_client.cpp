@@ -5,11 +5,23 @@
 #include <WiFiClientSecure.h>
 #include <ArduinoJson.h>
 
+// Embedded via board_build.embed_files = data/cert/x509_crt_bundle.bin
+extern const uint8_t rootca_crt_bundle_start[] asm(
+    "_binary_data_cert_x509_crt_bundle_bin_start");
+
 namespace LlmClient {
 namespace {
 
 LlmConfig config;
 bool wifiOk = false;
+
+void applyTls(WiFiClientSecure& client) {
+  if (config.tlsInsecure) {
+    client.setInsecure();
+    return;
+  }
+  client.setCACertBundle(rootca_crt_bundle_start);
+}
 
 String joinUrl(const String& base, const char* path) {
   String url = base;
@@ -95,8 +107,7 @@ bool chat(const String& systemPrompt, const String& userMessage, String& out,
   String url = joinUrl(config.baseUrl, "/chat/completions");
 
   WiFiClientSecure client;
-  // Phase 0: insecure TLS. Proper CA bundle lands in a later phase.
-  client.setInsecure();
+  applyTls(client);
 
   HTTPClient http;
   http.setTimeout(config.timeoutMs);

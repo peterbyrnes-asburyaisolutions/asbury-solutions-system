@@ -11,6 +11,7 @@
     "base_url": "https://api.openai.com/v1",
     "api_key": "",
     "model": "gpt-4o-mini",
-    "timeout_ms": 30000
+    "timeout_ms": 30000,
+    "tls_insecure": false
   }
 }

@@ -133,6 +133,7 @@ bool loadManifest() {
   llmCfg_.apiKey = doc["llm"]["api_key"] | "";
   llmCfg_.model = doc["llm"]["model"] | "gpt-4o-mini";
   llmCfg_.timeoutMs = doc["llm"]["timeout_ms"] | 30000;
+  llmCfg_.tlsInsecure = doc["llm"]["tls_insecure"] | false;
   llmEnabled_ = llmCfg_.enabled;
 
   Serial.printf("[agent] loaded %s v%s local_first=%d llm=%d\n", name_.c_str(),

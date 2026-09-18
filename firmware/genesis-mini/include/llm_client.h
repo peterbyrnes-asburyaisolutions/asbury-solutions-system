@@ -8,6 +8,9 @@ struct LlmConfig {
   String apiKey;
   String model;
   uint32_t timeoutMs = 30000;
+  // When false (default), verify TLS with the embedded Mozilla CA bundle.
+  // Set true only for lab/self-signed endpoints — never for production keys.
+  bool tlsInsecure = false;
 };
 
 namespace LlmClient {
