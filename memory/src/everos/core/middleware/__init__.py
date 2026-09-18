@@ -7,11 +7,13 @@ External usage::
         DEFAULT_CORS_ALLOW_HEADERS,
         DEFAULT_CORS_ALLOW_METHODS,
         DEFAULT_CORS_ORIGINS,
+        MemoryApiAuthMiddleware,
         ProfileMiddleware,
         PrometheusMiddleware,
     )
 """
 
+from .auth import MemoryApiAuthMiddleware as MemoryApiAuthMiddleware
 from .cors import DEFAULT_CORS_ALLOW_CREDENTIALS as DEFAULT_CORS_ALLOW_CREDENTIALS
 from .cors import DEFAULT_CORS_ALLOW_HEADERS as DEFAULT_CORS_ALLOW_HEADERS
 from .cors import DEFAULT_CORS_ALLOW_METHODS as DEFAULT_CORS_ALLOW_METHODS
@@ -25,6 +27,7 @@ __all__ = [
     "DEFAULT_CORS_ALLOW_HEADERS",
     "DEFAULT_CORS_ALLOW_METHODS",
     "DEFAULT_CORS_ORIGINS",
+    "MemoryApiAuthMiddleware",
     "ProfileMiddleware",
     "PrometheusMiddleware",
     "RequestIdMiddleware",
