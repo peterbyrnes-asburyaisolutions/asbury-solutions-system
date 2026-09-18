@@ -13,5 +13,13 @@
     "model": "gpt-4o-mini",
     "timeout_ms": 30000,
     "tls_insecure": false
+  },
+  "sync": {
+    "enabled": false,
+    "base_url": "http://192.168.1.10:8000",
+    "api_key": "",
+    "device_id": "genesis-mini-001",
+    "interval_s": 300,
+    "tls_insecure": false
   }
 }

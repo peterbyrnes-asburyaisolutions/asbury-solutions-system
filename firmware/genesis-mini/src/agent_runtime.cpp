@@ -4,9 +4,11 @@
 #include "module_slot.h"
 #include "sd_store.h"
 #include "status_led.h"
+#include "sync_client.h"
 
 #include <ArduinoJson.h>
 #include <WiFi.h>
+#include <time.h>
 
 namespace AgentRuntime {
 namespace {
@@ -19,6 +21,7 @@ String personality_;
 String wifiSsid_;
 String wifiPass_;
 LlmConfig llmCfg_;
+SyncConfig syncCfg_;
 
 String lower(const String& s) {
   String o = s;
@@ -92,6 +95,14 @@ bool tryLocalTool(const String& question, String& answer) {
   return false;
 }
 
+void startNtpIfNeeded() {
+  if (!LlmClient::wifiConnected()) {
+    return;
+  }
+  configTime(0, 0, "pool.ntp.org");
+  Serial.println(F("[time] SNTP started (pool.ntp.org, UTC)"));
+}
+
 }  // namespace
 
 bool begin() {
@@ -103,8 +114,10 @@ bool begin() {
   if (wifiSsid_.length() > 0) {
     StatusLed::setPattern(StatusLed::Pattern::Wifi);
     LlmClient::connectWifi(wifiSsid_.c_str(), wifiPass_.c_str());
+    startNtpIfNeeded();
   }
   LlmClient::configure(llmCfg_);
+  SyncClient::configure(syncCfg_);
   return true;
 }
 
@@ -136,8 +149,16 @@ bool loadManifest() {
   llmCfg_.tlsInsecure = doc["llm"]["tls_insecure"] | false;
   llmEnabled_ = llmCfg_.enabled;
 
-  Serial.printf("[agent] loaded %s v%s local_first=%d llm=%d\n", name_.c_str(),
-                version_.c_str(), localFirst_, llmEnabled_);
+  syncCfg_.enabled = doc["sync"]["enabled"] | false;
+  syncCfg_.baseUrl = doc["sync"]["base_url"] | "";
+  syncCfg_.apiKey = doc["sync"]["api_key"] | "";
+  syncCfg_.deviceId = doc["sync"]["device_id"] | "";
+  syncCfg_.intervalS = doc["sync"]["interval_s"] | 300;
+  syncCfg_.tlsInsecure = doc["sync"]["tls_insecure"] | false;
+
+  Serial.printf("[agent] loaded %s v%s local_first=%d llm=%d sync=%d\n",
+                name_.c_str(), version_.c_str(), localFirst_, llmEnabled_,
+                syncCfg_.enabled);
   return true;
 }
 
@@ -162,7 +183,13 @@ bool remember(const char* role, const String& text) {
     return false;
   }
   JsonDocument doc;
-  doc["ts"] = millis();
+  const time_t now = time(nullptr);
+  if (now > 1700000000) {
+    doc["ts"] = static_cast<uint64_t>(now) * 1000ULL;
+  } else {
+    doc["ts"] = millis();
+    doc["clock"] = "uptime";
+  }
   doc["role"] = role;
   doc["text"] = text;
   String line;
@@ -217,10 +244,20 @@ void printStatus() {
   Serial.printf("local_first: %s\n", localFirst_ ? "true" : "false");
   Serial.printf("llm.enabled: %s\n", llmEnabled_ ? "true" : "false");
   Serial.printf("llm.model: %s\n", llmCfg_.model.c_str());
+  Serial.printf("sync.enabled: %s\n", syncCfg_.enabled ? "true" : "false");
+  Serial.printf("sync.device_id: %s\n", syncCfg_.deviceId.c_str());
+  Serial.printf("sync.interval_s: %u\n",
+                static_cast<unsigned>(SyncClient::intervalS()));
   Serial.printf("wifi: %s\n",
                 LlmClient::wifiConnected()
                     ? WiFi.localIP().toString().c_str()
                     : "disconnected");
+  const time_t now = time(nullptr);
+  if (now > 1700000000) {
+    Serial.printf("time: %ld (epoch)\n", static_cast<long>(now));
+  } else {
+    Serial.println(F("time: not set (uptime clock)"));
+  }
   Serial.printf("modules: %u\n", ModuleBus::countPresent());
   Serial.printf("memory.jsonl: %u bytes\n",
                 static_cast<unsigned>(SdStore::fileSize("/AOS/AGENT/memory.jsonl")));

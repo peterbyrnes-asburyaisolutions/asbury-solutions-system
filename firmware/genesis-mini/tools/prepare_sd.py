@@ -2,11 +2,12 @@
 """Prepare a Genesis Mini SD card image from sdcard/AOS.
 
 Copies the tree to a destination (mounted card or staging dir) and optionally
-injects Wi-Fi / LLM credentials from environment variables or CLI flags.
+injects Wi-Fi / LLM / sync credentials from environment variables or CLI flags.
 
 Env (optional):
   AOS_WIFI_SSID, AOS_WIFI_PASS
   AOS_LLM_ENABLED, AOS_LLM_BASE_URL, AOS_LLM_API_KEY, AOS_LLM_MODEL
+  AOS_SYNC_ENABLED, AOS_SYNC_BASE_URL, AOS_SYNC_API_KEY, AOS_SYNC_DEVICE_ID
 """
 
 from __future__ import annotations
@@ -14,6 +15,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import shutil
 import sys
 from pathlib import Path
@@ -22,11 +24,27 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_SRC = ROOT / "sdcard" / "AOS"
 
+# EverOS PathSafeId charset (app_id / project_id / sender_id / device_id).
+DEVICE_ID_RE = re.compile(r"^[a-zA-Z0-9_.@+-]+$")
+
+
+def validate_device_id(device_id: str) -> None:
+    if not device_id:
+        return
+    if device_id in (".", "..") or not DEVICE_ID_RE.match(device_id):
+        raise SystemExit(
+            f"error: invalid sync.device_id {device_id!r} "
+            f"(must match ^[a-zA-Z0-9_.@+-]+$ and not be '.' / '..')"
+        )
+    if len(device_id) > 128:
+        raise SystemExit("error: sync.device_id exceeds 128 characters")
+
 
 def inject_manifest(manifest_path: Path, args: argparse.Namespace) -> None:
     data = json.loads(manifest_path.read_text(encoding="utf-8"))
     wifi = data.setdefault("wifi", {})
     llm = data.setdefault("llm", {})
+    sync = data.setdefault("sync", {})
 
     ssid = args.wifi_ssid or os.environ.get("AOS_WIFI_SSID", "")
     password = args.wifi_pass or os.environ.get("AOS_WIFI_PASS", "")
@@ -54,6 +72,30 @@ def inject_manifest(manifest_path: Path, args: argparse.Namespace) -> None:
         llm["api_key"] = api_key
     if model:
         llm["model"] = model
+
+    if args.sync_enabled is not None:
+        sync["enabled"] = args.sync_enabled
+    elif "AOS_SYNC_ENABLED" in os.environ:
+        sync["enabled"] = os.environ["AOS_SYNC_ENABLED"].lower() in (
+            "1",
+            "true",
+            "yes",
+            "on",
+        )
+
+    sync_base = args.sync_base_url or os.environ.get("AOS_SYNC_BASE_URL")
+    sync_key = args.sync_api_key or os.environ.get("AOS_SYNC_API_KEY")
+    sync_device = args.sync_device_id or os.environ.get("AOS_SYNC_DEVICE_ID")
+    if sync_base:
+        sync["base_url"] = sync_base
+    if sync_key:
+        sync["api_key"] = sync_key
+    if sync_device:
+        sync["device_id"] = sync_device
+    if args.sync_interval_s is not None:
+        sync["interval_s"] = args.sync_interval_s
+
+    validate_device_id(str(sync.get("device_id", "")))
 
     manifest_path.write_text(
         json.dumps(data, indent=2) + "\n", encoding="utf-8"
@@ -83,6 +125,15 @@ def main() -> int:
     parser.add_argument("--llm-base-url", default=None)
     parser.add_argument("--llm-api-key", default=None)
     parser.add_argument("--llm-model", default=None)
+    parser.add_argument(
+        "--sync-enabled",
+        type=lambda s: s.lower() in ("1", "true", "yes", "on"),
+        default=None,
+    )
+    parser.add_argument("--sync-base-url", default=None)
+    parser.add_argument("--sync-api-key", default=None)
+    parser.add_argument("--sync-device-id", default=None)
+    parser.add_argument("--sync-interval-s", type=int, default=None)
     parser.add_argument(
         "--clean",
         action="store_true",

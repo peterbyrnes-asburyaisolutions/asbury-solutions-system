@@ -1,17 +1,12 @@
 {
   "name": "SyncClient",
   "version": "0.1.0",
-  "description": "EverOS memory sync client for Genesis Mini",
+  "description": "EverOS memory sync client for Genesis Mini (cpp built via genesis-mini src symlink)",
   "keywords": ["everos", "sync", "memory"],
-  "authors": {
-    "name": "Agentic OS"
-  },
-  "frameworks": "arduino",
-  "platforms": "espressif32",
+  "frameworks": "*",
+  "platforms": "*",
   "build": {
     "includeDir": ".",
-    "srcFilter": [
-      "+<sync_client.cpp>"
-    ]
+    "srcFilter": ["-<sync_client.cpp>"]
   }
 }

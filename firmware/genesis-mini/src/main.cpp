@@ -2,10 +2,12 @@
 
 #include "agent_runtime.h"
 #include "board_pins.h"
+#include "llm_client.h"
 #include "module_slot.h"
 #include "oled_ssd1306.h"
 #include "sd_store.h"
 #include "status_led.h"
+#include "sync_client.h"
 
 #ifndef AOS_VERSION
 #define AOS_VERSION "0.2.0"
@@ -14,6 +16,7 @@
 namespace {
 
 String lineBuf;
+uint32_t lastSyncMs = 0;
 
 void printBanner() {
   Serial.println();
@@ -33,7 +36,8 @@ void printHelp() {
   Serial.println(F("  write <N> <payload>  write to module port N"));
   Serial.println(F("  beep <N>             beep / buzz on port N"));
   Serial.println(F("  ask <question>       ask the on-device agent"));
-  Serial.println(F("  install              list /AOS/INSTALL (Phase 0 stub)"));
+  Serial.println(F("  sync                 upload memory.jsonl to EverOS"));
+  Serial.println(F("  install              list /AOS/INSTALL + final sync"));
 }
 
 void cmdStatus() {
@@ -45,18 +49,63 @@ void cmdStatus() {
   AgentRuntime::printStatus();
 }
 
+void cmdSync() {
+  if (!SyncClient::isConfigured()) {
+    Serial.println(F("[sync] not configured — set sync block in manifest.json"));
+    return;
+  }
+  if (!LlmClient::wifiConnected()) {
+    Serial.println(F("[sync] wifi not connected"));
+    return;
+  }
+  String err;
+  StatusLed::setPattern(StatusLed::Pattern::Busy);
+  if (SyncClient::syncAll(64, &err)) {
+    Serial.println(F("[sync] done"));
+  } else {
+    Serial.print(F("[sync] failed: "));
+    Serial.println(err);
+  }
+  StatusLed::setPattern(StatusLed::Pattern::Ready);
+  lastSyncMs = millis();
+}
+
 void cmdInstall() {
-  Serial.println(F("[install] Phase 0 stub — drop packages under /AOS/INSTALL"));
-  Serial.println(F("Bridge/sync install pipeline arrives in Phase 3."));
+  Serial.println(F("[install] packages under /AOS/INSTALL"));
   if (!SdStore::isMounted()) {
     Serial.println(F("[install] SD not mounted"));
-    return;
-  }
-  if (!SdStore::exists("/AOS/INSTALL")) {
+  } else if (!SdStore::exists("/AOS/INSTALL")) {
     Serial.println(F("[install] /AOS/INSTALL missing"));
+  } else {
+    Serial.println(F("[install] directory present (host tools prepare packages)"));
+  }
+  if (SyncClient::isConfigured() && LlmClient::wifiConnected()) {
+    Serial.println(F("[install] final sync attempt..."));
+    String err;
+    if (SyncClient::syncAll(64, &err)) {
+      Serial.println(F("[install] sync ok"));
+    } else {
+      Serial.print(F("[install] sync failed: "));
+      Serial.println(err);
+    }
+    lastSyncMs = millis();
+  }
+}
+
+void maybeAutoSync() {
+  if (!SyncClient::isConfigured() || !LlmClient::wifiConnected()) {
     return;
   }
-  Serial.println(F("[install] directory present (host tools prepare packages)"));
+  const uint32_t intervalMs = SyncClient::intervalS() * 1000UL;
+  if (millis() - lastSyncMs < intervalMs) {
+    return;
+  }
+  lastSyncMs = millis();
+  String err;
+  if (!SyncClient::syncNow(&err)) {
+    Serial.print(F("[sync] auto failed: "));
+    Serial.println(err);
+  }
 }
 
 void handleLine(String line) {
@@ -83,6 +132,10 @@ void handleLine(String line) {
   }
   if (lower == "install") {
     cmdInstall();
+    return;
+  }
+  if (lower == "sync") {
+    cmdSync();
     return;
   }
 
@@ -188,6 +241,7 @@ void setup() {
 void loop() {
   StatusLed::tick();
   pollSerial();
+  maybeAutoSync();
 
   static uint32_t lastBtn = 0;
   if (digitalRead(PIN_BUTTON) == LOW && millis() - lastBtn > 400) {
