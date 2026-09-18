@@ -1,0 +1,10 @@
+{
+  "kind": "climate",
+  "description": "DHT11/DHT22 on pin a; optional beeper on pin b",
+  "sensor": "dht22",
+  "pins": {
+    "a": "dht_data",
+    "b": "beep",
+    "c": "spare"
+  }
+}

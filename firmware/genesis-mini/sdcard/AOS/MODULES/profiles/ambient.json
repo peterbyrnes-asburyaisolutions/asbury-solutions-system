@@ -1,0 +1,9 @@
+{
+  "kind": "ambient",
+  "description": "Ambient / light sensing via ADC on pin c",
+  "pins": {
+    "a": "digital_sense",
+    "b": "indicator",
+    "c": "adc_light"
+  }
+}

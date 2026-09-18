@@ -1,0 +1,7 @@
+{
+  "port": 3,
+  "enabled": true,
+  "profile": "climate",
+  "kind": "climate",
+  "label": "Climate sensor"
+}

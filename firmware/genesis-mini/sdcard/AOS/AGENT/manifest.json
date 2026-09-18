@@ -1,0 +1,16 @@
+{
+  "name": "genesis",
+  "version": "0.2.0",
+  "local_first": true,
+  "wifi": {
+    "ssid": "",
+    "pass": ""
+  },
+  "llm": {
+    "enabled": false,
+    "base_url": "https://api.openai.com/v1",
+    "api_key": "",
+    "model": "gpt-4o-mini",
+    "timeout_ms": 30000
+  }
+}

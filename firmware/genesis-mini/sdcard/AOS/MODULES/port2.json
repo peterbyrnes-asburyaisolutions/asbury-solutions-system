@@ -1,0 +1,7 @@
+{
+  "port": 2,
+  "enabled": true,
+  "profile": "panel",
+  "kind": "panel",
+  "label": "Front panel"
+}
