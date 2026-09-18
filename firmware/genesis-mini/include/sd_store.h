@@ -16,6 +16,11 @@ bool appendFile(const char* path, const char* data);
 bool removeFile(const char* path);
 size_t fileSize(const char* path);
 
+// Read one line starting at *offset (byte position). On success, *offset is
+// advanced past the newline (or to EOF). outLine excludes the newline.
+// Returns false at EOF or on error.
+bool readLineAt(const char* path, size_t& offset, String& outLine);
+
 // Ensure standard AOS directories exist under /AOS
 bool ensureLayout();
 

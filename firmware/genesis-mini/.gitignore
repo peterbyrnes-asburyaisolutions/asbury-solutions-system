@@ -6,4 +6,5 @@
 *.o
 *.elf
 *.bin
+!data/cert/x509_crt_bundle.bin
 *.map

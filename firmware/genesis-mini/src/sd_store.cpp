@@ -140,6 +140,37 @@ size_t fileSize(const char* path) {
   return n;
 }
 
+bool readLineAt(const char* path, size_t& offset, String& outLine) {
+  outLine = "";
+  if (!mounted || path == nullptr) {
+    return false;
+  }
+  FsFile f = sd.open(path, O_RDONLY);
+  if (!f) {
+    return false;
+  }
+  if (!f.seekSet(offset)) {
+    f.close();
+    return false;
+  }
+  if (!f.available()) {
+    f.close();
+    return false;
+  }
+  while (f.available()) {
+    char c = static_cast<char>(f.read());
+    offset++;
+    if (c == '\n') {
+      break;
+    }
+    if (c != '\r') {
+      outLine += c;
+    }
+  }
+  f.close();
+  return true;
+}
+
 bool ensureLayout() {
   bool ok = true;
   ok &= mkdirRecursive("/AOS");
