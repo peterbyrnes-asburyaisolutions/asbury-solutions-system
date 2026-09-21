@@ -1,0 +1,7 @@
+{
+  "port": 4,
+  "enabled": true,
+  "profile": "ambient",
+  "kind": "ambient",
+  "label": "Ambient light"
+}

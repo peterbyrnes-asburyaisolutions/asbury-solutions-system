@@ -1,0 +1,9 @@
+{
+  "kind": "control",
+  "description": "Digital output / relay driver on pin b",
+  "pins": {
+    "a": "sense",
+    "b": "drive",
+    "c": "spare"
+  }
+}

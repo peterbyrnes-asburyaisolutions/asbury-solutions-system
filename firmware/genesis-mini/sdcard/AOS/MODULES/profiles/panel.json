@@ -1,0 +1,9 @@
+{
+  "kind": "panel",
+  "description": "Two-button panel on pins a/c; pin b unused or LED",
+  "pins": {
+    "a": "button_primary",
+    "b": "led_optional",
+    "c": "button_secondary"
+  }
+}

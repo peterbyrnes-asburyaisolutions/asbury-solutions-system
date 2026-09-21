@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "profiles": ["panel", "climate", "ambient", "control"],
+  "ports": {
+    "1": {"role": "sd_card", "bus": "spi"},
+    "2": {"role": "module", "default_profile": "panel"},
+    "3": {"role": "module", "default_profile": "climate"},
+    "4": {"role": "module", "default_profile": "ambient"}
+  }
+}

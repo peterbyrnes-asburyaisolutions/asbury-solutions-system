@@ -1,0 +1,240 @@
+#include "oled_ssd1306.h"
+
+#include "board_pins.h"
+
+#include <cstring>
+#include <Wire.h>
+
+namespace Oled {
+namespace {
+
+constexpr uint8_t WIDTH = 128;
+constexpr uint8_t HEIGHT = 64;
+constexpr uint8_t PAGES = HEIGHT / 8;
+
+uint8_t i2cAddr = 0x3C;
+bool present = false;
+uint8_t cursorCol = 0;
+uint8_t cursorRow = 0;
+uint8_t framebuffer[WIDTH * PAGES];
+
+// 5x7 font for ASCII 32..127 (subset sufficient for status lines)
+const uint8_t FONT5X7[][5] PROGMEM = {
+    {0x00, 0x00, 0x00, 0x00, 0x00},  // space
+    {0x00, 0x00, 0x5F, 0x00, 0x00},  // !
+    {0x00, 0x07, 0x00, 0x07, 0x00},  // "
+    {0x14, 0x7F, 0x14, 0x7F, 0x14},  // #
+    {0x24, 0x2A, 0x7F, 0x2A, 0x12},  // $
+    {0x23, 0x13, 0x08, 0x64, 0x62},  // %
+    {0x36, 0x49, 0x55, 0x22, 0x50},  // &
+    {0x00, 0x05, 0x03, 0x00, 0x00},  // '
+    {0x00, 0x1C, 0x22, 0x41, 0x00},  // (
+    {0x00, 0x41, 0x22, 0x1C, 0x00},  // )
+    {0x08, 0x2A, 0x1C, 0x2A, 0x08},  // *
+    {0x08, 0x08, 0x3E, 0x08, 0x08},  // +
+    {0x00, 0x50, 0x30, 0x00, 0x00},  // ,
+    {0x08, 0x08, 0x08, 0x08, 0x08},  // -
+    {0x00, 0x60, 0x60, 0x00, 0x00},  // .
+    {0x20, 0x10, 0x08, 0x04, 0x02},  // /
+    {0x3E, 0x51, 0x49, 0x45, 0x3E},  // 0
+    {0x00, 0x42, 0x7F, 0x40, 0x00},  // 1
+    {0x42, 0x61, 0x51, 0x49, 0x46},  // 2
+    {0x21, 0x41, 0x45, 0x4B, 0x31},  // 3
+    {0x18, 0x14, 0x12, 0x7F, 0x10},  // 4
+    {0x27, 0x45, 0x45, 0x45, 0x39},  // 5
+    {0x3C, 0x4A, 0x49, 0x49, 0x30},  // 6
+    {0x01, 0x71, 0x09, 0x05, 0x03},  // 7
+    {0x36, 0x49, 0x49, 0x49, 0x36},  // 8
+    {0x06, 0x49, 0x49, 0x29, 0x1E},  // 9
+    {0x00, 0x36, 0x36, 0x00, 0x00},  // :
+    {0x00, 0x56, 0x36, 0x00, 0x00},  // ;
+    {0x00, 0x08, 0x14, 0x22, 0x41},  // <
+    {0x14, 0x14, 0x14, 0x14, 0x14},  // =
+    {0x41, 0x22, 0x14, 0x08, 0x00},  // >
+    {0x02, 0x01, 0x51, 0x09, 0x06},  // ?
+    {0x32, 0x49, 0x79, 0x41, 0x3E},  // @
+    {0x7E, 0x11, 0x11, 0x11, 0x7E},  // A
+    {0x7F, 0x49, 0x49, 0x49, 0x36},  // B
+    {0x3E, 0x41, 0x41, 0x41, 0x22},  // C
+    {0x7F, 0x41, 0x41, 0x22, 0x1C},  // D
+    {0x7F, 0x49, 0x49, 0x49, 0x41},  // E
+    {0x7F, 0x09, 0x09, 0x01, 0x01},  // F
+    {0x3E, 0x41, 0x41, 0x51, 0x32},  // G
+    {0x7F, 0x08, 0x08, 0x08, 0x7F},  // H
+    {0x00, 0x41, 0x7F, 0x41, 0x00},  // I
+    {0x20, 0x40, 0x41, 0x3F, 0x01},  // J
+    {0x7F, 0x08, 0x14, 0x22, 0x41},  // K
+    {0x7F, 0x40, 0x40, 0x40, 0x40},  // L
+    {0x7F, 0x02, 0x04, 0x02, 0x7F},  // M
+    {0x7F, 0x04, 0x08, 0x10, 0x7F},  // N
+    {0x3E, 0x41, 0x41, 0x41, 0x3E},  // O
+    {0x7F, 0x09, 0x09, 0x09, 0x06},  // P
+    {0x3E, 0x41, 0x51, 0x21, 0x5E},  // Q
+    {0x7F, 0x09, 0x19, 0x29, 0x46},  // R
+    {0x46, 0x49, 0x49, 0x49, 0x31},  // S
+    {0x01, 0x01, 0x7F, 0x01, 0x01},  // T
+    {0x3F, 0x40, 0x40, 0x40, 0x3F},  // U
+    {0x1F, 0x20, 0x40, 0x20, 0x1F},  // V
+    {0x7F, 0x20, 0x18, 0x20, 0x7F},  // W
+    {0x63, 0x14, 0x08, 0x14, 0x63},  // X
+    {0x03, 0x04, 0x78, 0x04, 0x03},  // Y
+    {0x61, 0x51, 0x49, 0x45, 0x43},  // Z
+};
+
+bool cmd(uint8_t c) {
+  Wire.beginTransmission(i2cAddr);
+  Wire.write(static_cast<uint8_t>(0x00));
+  Wire.write(c);
+  return Wire.endTransmission() == 0;
+}
+
+bool cmd2(uint8_t c, uint8_t v) {
+  return cmd(c) && cmd(v);
+}
+
+void drawChar(uint8_t col, uint8_t row, char ch) {
+  if (row >= 8 || col >= WIDTH) {
+    return;
+  }
+  if (ch < 32 || ch > 90) {
+    if (ch >= 'a' && ch <= 'z') {
+      ch = static_cast<char>(ch - 32);
+    } else {
+      ch = '?';
+    }
+  }
+  uint8_t idx = static_cast<uint8_t>(ch - 32);
+  constexpr size_t kFontCount = sizeof(FONT5X7) / sizeof(FONT5X7[0]);
+  if (idx >= kFontCount) {
+    idx = static_cast<uint8_t>('?' - 32);
+  }
+  for (uint8_t i = 0; i < 5; i++) {
+    uint8_t x = col + i;
+    if (x >= WIDTH) {
+      break;
+    }
+    framebuffer[row * WIDTH + x] = pgm_read_byte(&FONT5X7[idx][i]);
+  }
+  if (col + 5 < WIDTH) {
+    framebuffer[row * WIDTH + col + 5] = 0x00;
+  }
+}
+
+}  // namespace
+
+bool begin(uint8_t addr) {
+  i2cAddr = addr;
+  Wire.begin(PIN_I2C_SDA, PIN_I2C_SCL);
+  Wire.beginTransmission(i2cAddr);
+  present = (Wire.endTransmission() == 0);
+  if (!present) {
+    Serial.println(F("[oled] not found (optional)"));
+    return false;
+  }
+
+  cmd(0xAE);             // display off
+  cmd2(0xD5, 0x80);      // clock
+  cmd2(0xA8, 0x3F);      // multiplex
+  cmd2(0xD3, 0x00);      // offset
+  cmd(0x40);             // start line
+  cmd2(0x8D, 0x14);      // charge pump
+  cmd2(0x20, 0x00);      // horizontal addressing
+  cmd(0xA1);             // segment remap
+  cmd(0xC8);             // COM scan dec
+  cmd2(0xDA, 0x12);      // COM pins
+  cmd2(0x81, 0xCF);      // contrast
+  cmd2(0xD9, 0xF1);      // precharge
+  cmd2(0xDB, 0x40);      // vcom
+  cmd(0xA4);             // resume RAM
+  cmd(0xA6);             // normal
+  cmd(0xAF);             // display on
+
+  clear();
+  flush();
+  Serial.println(F("[oled] ready"));
+  return true;
+}
+
+bool isPresent() { return present; }
+
+void clear() {
+  memset(framebuffer, 0, sizeof(framebuffer));
+  cursorCol = 0;
+  cursorRow = 0;
+}
+
+void setCursor(uint8_t col, uint8_t row) {
+  cursorCol = col;
+  cursorRow = row;
+}
+
+void print(const char* text) {
+  if (text == nullptr) {
+    return;
+  }
+  while (*text) {
+    if (*text == '\n') {
+      cursorCol = 0;
+      cursorRow++;
+      text++;
+      continue;
+    }
+    drawChar(cursorCol, cursorRow, *text);
+    cursorCol = static_cast<uint8_t>(cursorCol + 6);
+    if (cursorCol + 6 > WIDTH) {
+      cursorCol = 0;
+      cursorRow++;
+    }
+    text++;
+  }
+}
+
+void println(const char* text) {
+  print(text);
+  cursorCol = 0;
+  cursorRow++;
+}
+
+void showBanner(const char* version) {
+  clear();
+  setCursor(0, 0);
+  println("Genesis Mini");
+  setCursor(0, 2);
+  print("AOS ");
+  println(version ? version : "?");
+  setCursor(0, 4);
+  println("Agentic OS");
+  flush();
+}
+
+void showStatus(const char* line1, const char* line2) {
+  clear();
+  setCursor(0, 0);
+  println(line1 ? line1 : "");
+  setCursor(0, 2);
+  println(line2 ? line2 : "");
+  flush();
+}
+
+void flush() {
+  if (!present) {
+    return;
+  }
+  cmd(0x21);  // column addr
+  cmd(0);
+  cmd(WIDTH - 1);
+  cmd(0x22);  // page addr
+  cmd(0);
+  cmd(PAGES - 1);
+
+  for (size_t i = 0; i < sizeof(framebuffer);) {
+    Wire.beginTransmission(i2cAddr);
+    Wire.write(static_cast<uint8_t>(0x40));
+    for (uint8_t n = 0; n < 16 && i < sizeof(framebuffer); n++, i++) {
+      Wire.write(framebuffer[i]);
+    }
+    Wire.endTransmission();
+  }
+}
+
+}  // namespace Oled

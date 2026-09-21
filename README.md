@@ -7,10 +7,12 @@ in, work happens, results come back — with a scheduler, a dispatcher,
 self-healing monitors, and one hard rule: nothing reports done that did not
 finish.
 
-> This repository is the public, sanitized view of the system. It shows the
-> architecture, the design decisions, and the stack. It does not contain
-> credentials, live endpoints, client data, or internal operations details
-> (see [docs/sanitization.md](docs/sanitization.md)).
+> The public docs, diagrams, examples, and tools are a sanitized view of the
+> agent organization. They show the architecture, the design decisions, and
+> the stack. They do not contain credentials, live endpoints, client data, or
+> internal operations details (see [docs/sanitization.md](docs/sanitization.md)).
+> This repository also holds the device monorepo: EverOS memory, Genesis Mini
+> firmware, and the sync bridge (see [docs/decisions.md](docs/decisions.md)).
 
 ## Live status
 
@@ -159,10 +161,14 @@ The full log, including the SQLite (WAL) ledger decision
 .
 ├── README.md                 # this file — public overview + live status
 ├── LICENSE                   # MIT
+├── memory/                   # EverOS memory service
+├── firmware/                 # Genesis Mini device firmware
+├── bridge/                   # sync client between device and memory
 ├── docs/
 │   ├── architecture.md       # system + kernel + task-flow diagrams
 │   ├── architecture.svg      # canonical system diagram (Harbor Grit)
 │   ├── banner.svg            # README hero banner (Harbor Grit)
+│   ├── decisions.md          # monorepo consolidation decisions
 │   ├── running-15-agents-in-production.md  # how the fleet runs in production
 │   ├── day-in-the-life.md    # anonymized shape of a working day
 │   ├── post-mortem-lessons.md  # honest lessons from running autonomous agents
